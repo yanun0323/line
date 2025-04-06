@@ -68,12 +68,12 @@ func NewNotifier(channelAccessToken string) (Notifier, error) {
 
 func (r *lineNotifier) ReplyMessage(replyToken, text string, opt ...NotifyMessageOption) (LineMessageID, error) {
 
-	mentionMap := make(map[string]messaging_api.SubstitutionObjectInterface)
 	option := NotifyMessageOption{}
 	if len(opt) != 0 {
 		option = opt[0]
 	}
 
+	mentionMap := make(map[string]messaging_api.SubstitutionObjectInterface, len(option.MentionUserID))
 	for key, userID := range option.MentionUserID {
 		mentionMap[key] = messaging_api.MentionSubstitutionObject{
 			SubstitutionObject: messaging_api.SubstitutionObject{"mention"},
@@ -114,7 +114,7 @@ func (r *lineNotifier) SendMessage(targetID, text string, opt ...NotifyMessageOp
 		option = opt[0]
 	}
 
-	mentionMap := make(map[string]messaging_api.SubstitutionObjectInterface)
+	mentionMap := make(map[string]messaging_api.SubstitutionObjectInterface, len(option.MentionUserID))
 	for key, userID := range option.MentionUserID {
 		mentionMap[key] = messaging_api.MentionSubstitutionObject{
 			SubstitutionObject: messaging_api.SubstitutionObject{"mention"},
