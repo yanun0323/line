@@ -9,7 +9,31 @@ import (
 	"github.com/yanun0323/line/internal"
 )
 
-type Bot struct {
+type Bot interface {
+	//	ListenAndServe listens on the TCP network address addr and then calls [Serve] to handle requests on incoming connections. Accepted connections are configured to enable TCP keep-alives.
+	//
+	//	If addr is blank, ":http" is used.
+	//
+	//	ListenAndServe always returns a non-nil error. After [Server.Shutdown] or [Server.Close], the returned error is [ErrServerClosed].
+	ListenAndServe(addr string, callbackPath string) error
+
+	//	SetJoinEventHandler sets the handler for join events.
+	SetJoinEventHandler(func(EventJoin) error)
+
+	//	SetLeaveEventHandler sets the handler for leave events.
+	SetLeaveEventHandler(func(EventLeave) error)
+
+	//	SetMemberJoinedEventHandler sets the handler for member joined events.
+	SetMemberJoinedEventHandler(func(EventMemberJoined) error)
+
+	//	SetMemberLeftEventHandler sets the handler for member left events.
+	SetMemberLeftEventHandler(func(EventMemberLeft) error)
+
+	//	SetMessageEventHandler sets the handler for message events.
+	SetMessageEventHandler(func(EventMessage) error)
+}
+
+type bot struct {
 	channelSecret string
 
 	joinEventHandler         func(EventJoin) error
@@ -19,13 +43,13 @@ type Bot struct {
 	messageEventHandler      func(EventMessage) error
 }
 
-func NewBot(channelSecret string) (*Bot, error) {
-	return &Bot{
+func NewBot(channelSecret string) (Bot, error) {
+	return &bot{
 		channelSecret: channelSecret,
 	}, nil
 }
 
-func (b *Bot) ListenAndServe(addr string, callbackPath string) error {
+func (b *bot) ListenAndServe(addr string, callbackPath string) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc(callbackPath, b.HandleEvent)
 
@@ -37,27 +61,27 @@ func (b *Bot) ListenAndServe(addr string, callbackPath string) error {
 	return server.ListenAndServe()
 }
 
-func (b *Bot) SetJoinEventHandler(handler func(EventJoin) error) {
+func (b *bot) SetJoinEventHandler(handler func(EventJoin) error) {
 	b.joinEventHandler = handler
 }
 
-func (b *Bot) SetLeaveEventHandler(handler func(EventLeave) error) {
+func (b *bot) SetLeaveEventHandler(handler func(EventLeave) error) {
 	b.leaveEventHandler = handler
 }
 
-func (b *Bot) SetMemberJoinedEventHandler(handler func(EventMemberJoined) error) {
+func (b *bot) SetMemberJoinedEventHandler(handler func(EventMemberJoined) error) {
 	b.memberJoinedEventHandler = handler
 }
 
-func (b *Bot) SetMemberLeftEventHandler(handler func(EventMemberLeft) error) {
+func (b *bot) SetMemberLeftEventHandler(handler func(EventMemberLeft) error) {
 	b.memberLeftEventHandler = handler
 }
 
-func (b *Bot) SetMessageEventHandler(handler func(EventMessage) error) {
+func (b *bot) SetMessageEventHandler(handler func(EventMessage) error) {
 	b.messageEventHandler = handler
 }
 
-func (b *Bot) HandleEvent(w http.ResponseWriter, req *http.Request) {
+func (b *bot) HandleEvent(w http.ResponseWriter, req *http.Request) {
 	// log.Print("/callback called...")
 	cb, err := webhook.ParseRequest(b.channelSecret, req)
 	if err != nil {
@@ -154,7 +178,7 @@ func (b *Bot) HandleEvent(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func (b *Bot) getSource(s webhook.SourceInterface) source {
+func (b *bot) getSource(s webhook.SourceInterface) source {
 	switch ss := s.(type) {
 	case webhook.UserSource:
 		return source{
