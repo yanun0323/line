@@ -43,6 +43,36 @@ type bot struct {
 	messageEventHandler      func(EventMessage) error
 }
 
+// NewBot creates a new bot which is used to handle events from LINE.
+//
+// # Example:
+//
+//	// create a new bot
+//	bot, err := line.NewBot("CHANNEL_SECRET")
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	// create a new notifier
+//	notifier, err := line.NewNotifier("CHANNEL_ACCESS_TOKEN")
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	// set the message event handler
+//	bot.SetMessageEventHandler(func(event EventMessage) error {
+//		_, err := notifier.ReplyMessage(event.Data.ReplyToken, "Hello, world!")
+//		if err != nil {
+//			return err
+//		}
+//
+//		return nil
+//	})
+//
+//	// listen and serve
+//	if err := bot.ListenAndServe(":8080", "/callback"); err != nil {
+//		log.Fatal(err)
+//	}
 func NewBot(channelSecret string) (Bot, error) {
 	return &bot{
 		channelSecret: channelSecret,

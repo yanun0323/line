@@ -1,11 +1,16 @@
 package line
 
+// SourceType is the type of the source of the event.
 type SourceType int
 
 const (
+	// SourceTypeNotFound represents the source type is not found.
 	SourceTypeNotFound SourceType = iota
+	// SourceTypeUser represents the event is from a user.
 	SourceTypeUser
+	// SourceTypeGroup represents the event is from a group.
 	SourceTypeGroup
+	// SourceTypeRoom represents the event is from a room.
 	SourceTypeRoom
 )
 
@@ -47,12 +52,17 @@ type eventMessageData struct {
 	QuotedMessageID string
 }
 
+// EventJoin is the event of a user joining a group or room.
 type EventJoin event[eventJoinData]
 
+// EventLeave is the event of a user leaving a group or room.
 type EventLeave event[eventLeaveData]
 
+// EventMemberJoined is the event of a user joining a group or room.
 type EventMemberJoined event[eventMemberJoinedData]
 
+// EventMemberLeft is the event of a user leaving a group or room.
 type EventMemberLeft event[eventMemberLeftData]
 
+// EventMessage is the event of a message.
 type EventMessage event[eventMessageData]

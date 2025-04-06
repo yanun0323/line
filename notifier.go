@@ -8,8 +8,10 @@ import (
 	"github.com/yanun0323/line/internal"
 )
 
+// LineMessageID is the ID of the message.
 type LineMessageID string
 
+// NotifyMessageOption is the option for the message.
 type NotifyMessageOption struct {
 	// QuoteToken is the token of the message to be quoted
 	QuoteToken string
@@ -17,6 +19,7 @@ type NotifyMessageOption struct {
 	MentionUserID map[string]string
 }
 
+// Notifier is the interface for the notifier.
 type Notifier interface {
 	// ReplyMessage [FREE] reply message to user
 	ReplyMessage(replyToken, text string, opt ...NotifyMessageOption) (LineMessageID, error)
@@ -30,6 +33,20 @@ type lineNotifier struct {
 	botUserID string
 }
 
+// NewNotifier creates a new notifier which is used to send message to a user/group/room.
+//
+// # Example:
+//
+//	notifier, err := line.NewNotifier("LINE_CHANNEL_ACCESS_TOKEN")
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	// Reply message from user/group/room. It doesn't cost any money.
+//	notifier.ReplyMessage("replyToken", "Hello, world!")
+//
+//	// Send message to user/group/room. It costs money.
+//	notifier.SendMessage("targetID", "Hello, world!")
 func NewNotifier(channelAccessToken string) (Notifier, error) {
 	bot, err := messaging_api.NewMessagingApiAPI(
 		channelAccessToken,
