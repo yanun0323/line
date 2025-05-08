@@ -41,6 +41,7 @@ type bot struct {
 	memberJoinedEventHandler func(EventMemberJoined) error
 	memberLeftEventHandler   func(EventMemberLeft) error
 	messageEventHandler      func(EventMessage) error
+	stickerEventHandler      func(EventSticker) error
 }
 
 // NewBot creates a new bot which is used to handle events from LINE.
@@ -193,6 +194,17 @@ func (b *bot) HandleEvent(w http.ResponseWriter, req *http.Request) {
 						Text:            message.Text,
 						QuoteToken:      message.QuoteToken,
 						QuotedMessageID: message.QuotedMessageId,
+					},
+				})
+			case webhook.StickerMessageContent:
+				err = invoke(b.stickerEventHandler, EventSticker{
+					WebhookEventID: e.WebhookEventId,
+					Source:         b.getSource(e.Source),
+					Timestamp:      e.Timestamp,
+					Data: eventStickerData{
+						ReplyToken: e.ReplyToken,
+						PackageID:  message.PackageId,
+						StickerID:  message.StickerId,
 					},
 				})
 			default:

@@ -52,6 +52,12 @@ type eventMessageData struct {
 	QuotedMessageID string
 }
 
+type eventStickerData struct {
+	ReplyToken string
+	PackageID  string
+	StickerID  string
+}
+
 // EventJoin is the event of a user joining a group or room.
 type EventJoin event[eventJoinData]
 
@@ -66,3 +72,6 @@ type EventMemberLeft event[eventMemberLeftData]
 
 // EventMessage is the event of a message.
 type EventMessage event[eventMessageData]
+
+// EventSticker is the event of a sticker.
+type EventSticker event[eventStickerData]
