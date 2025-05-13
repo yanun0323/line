@@ -89,6 +89,7 @@ func (b *bot) ListenAndServe(addr string, callbackPath string) error {
 		Handler: mux,
 	}
 
+	log.Printf("\033[32mINFO\033[0m Serve Line Bot on %s", addr)
 	return server.ListenAndServe()
 }
 
